@@ -78,24 +78,24 @@ for TestSet in np.split(ShuffledData, k):
     # Instantiate the SVM
     print("\nFold")
     l = TestData(TestSet, "linear")
-    lGuess = pd.concat([TestLabels, pd.DataFrame(l[0])], axis=1)
+    lGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(l[0])], axis=1)
     print("Linear:\t",l[1])
     guesses.append(lGuess)
     
     p = TestData(TestSet, "poly")
-    pGuess = pd.concat([TestLabels, pd.DataFrame(p[0])], axis=1)
+    pGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(p[0])], axis=1)
     print("Poly:\t",p[1])
     guesses.append(pGuess)
     
     
     r = TestData(TestSet, "rbf")
-    rGuess = pd.concat([TestLabels, pd.DataFrame(r[0])], axis=1)
+    rGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(r[0])], axis=1)
     print("RBF:\t",r[1])
     guesses.append(rGuess)
     
     s = TestData(TestSet, "sigmoid")
-    sGuess = pd.concat([TestLabels, pd.DataFrame(s[0])], axis=1)
-    print("Sigmoid:\t",s[1])
+    sGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(s[0])], axis=1)
+    print("Sigmoid:",s[1])
     guesses.append(sGuess)
     
     
