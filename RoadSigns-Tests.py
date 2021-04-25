@@ -59,11 +59,16 @@ X = pd.DataFrame(gatherData())
 Data = pd.concat([y,X], axis =1)
 ShuffledData = shuffle(Data)
 
-
 k = 5
 guesses = []
+averages = []
+
 for interval in range(1,51):
     interval /= 50
+    aveLin = 0.0
+    avePol = 0.0
+    aveRBF = 0.0
+    aveSig = 0.0
     for TestSet in np.split(ShuffledData, k):
         # Prepare Training Set
         TrainingSet = ShuffledData.drop(TestSet.index)
@@ -82,28 +87,48 @@ for interval in range(1,51):
         lGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(l[0])], axis=1)
         print("Linear:\t",l[1])
         guesses.append(lGuess)
+        aveLin += l[1]
         #print(lGuess,"\n")
         
         p = TestData(TestSet, "poly", interval)
         pGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(p[0])], axis=1)
         print("Poly:\t",p[1])
         guesses.append(pGuess)
+        avePol += p[1]
         #print(pGuess,"\n")
         
         r = TestData(TestSet, "rbf", interval)
         rGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(r[0])], axis=1)
         print("RBF:\t",r[1])
         guesses.append(rGuess)
+        aveRBF += r[1]
         #print(rGuess,"\n")
         
         s = TestData(TestSet, "sigmoid", interval)
         sGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(s[0])], axis=1)
         print("Sigmoid:",s[1])
+        aveSig += s[1]
         guesses.append(sGuess)
         #print(sGuess,"\n")
-        
+    aveLin /= k
+    avePol /= k
+    aveRBF /= k
+    aveSig /= k
+    print("Linear:",aveLin)
+    print("Poly:", avePol)
+    print("RBF:", aveRBF)
+    print("Sigmoid", aveSig)
+    averages.append((aveLin, avePol, aveRBF, aveSig))
     print("\n=====================================================================\n=====================================================================\n")
       
     
 #print(guesses)
+
+#print(averages)
+for i in averages:
+  print("Linear:", i[0], "Poly:", i[1], "RBF:", i[2], "Sigmoid:", i[3])
+
+
+
+
 
