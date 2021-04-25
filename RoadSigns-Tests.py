@@ -82,7 +82,7 @@ for interval in range(1,51):
         TrainingSet = TrainingSet.iloc[:,1:]
         
         # Instantiate the SVM
-        print("\nFold :", interval)
+        print("\nFold : Regularization @", interval)
         l = TestData(TestSet, "linear", interval)
         lGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(l[0])], axis=1)
         print("Linear:\t",l[1])
@@ -114,10 +114,11 @@ for interval in range(1,51):
     avePol /= k
     aveRBF /= k
     aveSig /= k
-    print("Linear:",aveLin)
-    print("Poly:", avePol)
-    print("RBF:", aveRBF)
-    print("Sigmoid", aveSig)
+    print("\nAverages:")
+    print("  Linear:",aveLin)
+    print("  Poly:", avePol)
+    print("  RBF:", aveRBF)
+    print("  Sigmoid", aveSig)
     averages.append((aveLin, avePol, aveRBF, aveSig))
     print("\n=====================================================================\n=====================================================================\n")
       
@@ -126,7 +127,7 @@ for interval in range(1,51):
 
 #print(averages)
 for i in averages:
-  print("Linear:", i[0], "Poly:", i[1], "RBF:", i[2], "Sigmoid:", i[3])
+  print("Linear:", i[0], "\tPoly:", i[1], "\tRBF:", i[2], "\tSigmoid:", i[3])
 
 
 
