@@ -3,6 +3,7 @@
 #
 # Canadian Road Signs Recognition
 import os
+import sys
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -15,11 +16,6 @@ from skimage.transform import resize
 
 
 # Read in Data
-def main():
-    y = getLabels()
-    X = gatherData()
-    print(X)
-
 def gatherData():
     data = []
     folders = os.listdir('../dataSets')
@@ -27,10 +23,7 @@ def gatherData():
         folderItems = '../dataSets/' + folder
         for items in os.listdir(folderItems):
             getItems = folderItems + '/' + items
-            img = image.imread(getItems, format="jpg")
-            res = rgb2gray(img)
-            res = resize(res,(250, 250))
-            data.append(res)
+            data.append(normalizeImage(getItems))
 
     return data
 def getLabels():
@@ -42,14 +35,24 @@ def getLabels():
             label = label + folder[i]
         folderItems = '../dataSets/' + folder
         for j in range(len(os.listdir(folderItems))):
-            labels.append(label)
+            labels.append(label.strip())
         label = " "
     return labels
 
-if __name__ == '__main__':
-    main()
-# Normalize Data
 
+# Normalize Data
+def normalizeImage(input, format="jpg"):
+    img = image.imread(input, format=format)
+    res = rgb2gray(img)
+    res = resize(res,(250, 250))
+    row = []
+    #print(*res)
+    for i in res:
+        for j in i:
+            row.append(j)
+            #print(j)
+        
+    return row
 
 
 # 5 Fold Cross Validation
@@ -61,7 +64,33 @@ if __name__ == '__main__':
 
 
 # Perform SVM/SVC
-
-
+def PredictInput(input, dataSet, kernel="linear", regularization=1, gamma="scale"):
+    # Separate the Labels from the Data
+    TrainingLabels = dataSet.iloc[:,0]
+    TrainingSet = dataSet.iloc[:,1:]
+        
+    s = svm.SVC(kernel=kernel, C=regularization, gamma=gamma)
+    s.fit(TrainingSet, TrainingLabels)
+    return s.predict(input)
 
 # Evaluate the Results
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("Please input the address of the the test image you wish you predict")
+        
+    input = None
+    try:
+        input = normalizeImage(sys.argv[1])
+    except:
+        print("error tryting to process the input image!! Aborting")
+        sys.exit(0)
+    input = pd.DataFrame(input).transpose()
+    #print(input)
+    y = pd.DataFrame(getLabels())
+    X = pd.DataFrame(gatherData())
+    
+    Data = pd.concat([y,X], axis=1)
+    
+    print("Prediction:",*PredictInput(input, Data))
+        
