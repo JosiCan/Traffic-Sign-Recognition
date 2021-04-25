@@ -47,8 +47,8 @@ def getLabels():
         label = " "
     return labels
 
-def TestData(testSet, kernel):
-    s = svm.SVC(kernel=kernel)
+def TestData(testSet, kernel, regularization=1, gamma="scale"):
+    s = svm.SVC(kernel=kernel, C=regularization, gamma=gamma)
     s.fit(TrainingSet, TrainingLabels)
     result = s.predict(TestSet)
     
@@ -62,43 +62,48 @@ ShuffledData = shuffle(Data)
 
 k = 5
 guesses = []
-
-for TestSet in np.split(ShuffledData, k):
-    # Prepare Training Set
-    TrainingSet = ShuffledData.drop(TestSet.index)
+for interval in range(1,51):
+    interval /= 50
+    for TestSet in np.split(ShuffledData, k):
+        # Prepare Training Set
+        TrainingSet = ShuffledData.drop(TestSet.index)
+        
+        # Separate Labels from the Data
+        TestLabels = TestSet.iloc[:,0]
+        TestSet = TestSet.iloc[:,1:]
+        
+        # Separate the Labels from the Data
+        TrainingLabels = TrainingSet.iloc[:,0]
+        TrainingSet = TrainingSet.iloc[:,1:]
+        
+        # Instantiate the SVM
+        print("\nFold :", interval)
+        l = TestData(TestSet, "linear", interval)
+        lGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(l[0])], axis=1)
+        print("Linear:\t",l[1])
+        guesses.append(lGuess)
+        #print(lGuess,"\n")
+        
+        p = TestData(TestSet, "poly", interval)
+        pGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(p[0])], axis=1)
+        print("Poly:\t",p[1])
+        guesses.append(pGuess)
+        #print(pGuess,"\n")
+        
+        r = TestData(TestSet, "rbf", interval)
+        rGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(r[0])], axis=1)
+        print("RBF:\t",r[1])
+        guesses.append(rGuess)
+        #print(rGuess,"\n")
+        
+        s = TestData(TestSet, "sigmoid", interval)
+        sGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(s[0])], axis=1)
+        print("Sigmoid:",s[1])
+        guesses.append(sGuess)
+        #print(sGuess,"\n")
+        
+    print("\n=====================================================================\n=====================================================================\n")
+      
     
-    # Separate Labels from the Data
-    TestLabels = TestSet.iloc[:,0]
-    TestSet = TestSet.iloc[:,1:]
-    
-    # Separate the Labels from the Data
-    TrainingLabels = TrainingSet.iloc[:,0]
-    TrainingSet = TrainingSet.iloc[:,1:]
-    
-    # Instantiate the SVM
-    print("\nFold")
-    l = TestData(TestSet, "linear")
-    lGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(l[0])], axis=1)
-    print("Linear:\t",l[1])
-    guesses.append(lGuess)
-    
-    p = TestData(TestSet, "poly")
-    pGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(p[0])], axis=1)
-    print("Poly:\t",p[1])
-    guesses.append(pGuess)
-    
-    
-    r = TestData(TestSet, "rbf")
-    rGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(r[0])], axis=1)
-    print("RBF:\t",r[1])
-    guesses.append(rGuess)
-    
-    s = TestData(TestSet, "sigmoid")
-    sGuess = pd.concat([TestLabels.reset_index(drop=True), pd.DataFrame(s[0])], axis=1)
-    print("Sigmoid:",s[1])
-    guesses.append(sGuess)
-    
-    
-    
-print(guesses)
+#print(guesses)
 
