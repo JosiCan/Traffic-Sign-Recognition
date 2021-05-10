@@ -64,7 +64,7 @@ def normalizeImage(input, format="jpg"):
 
 
 # Perform SVM/SVC
-def PredictInput(input, dataSet, kernel="linear", regularization=1, gamma="scale"):
+def PredictInput(input, dataSet, kernel="linear", regularization=1, gamma="auto"):
     # Separate the Labels from the Data
     TrainingLabels = dataSet.iloc[:,0]
     TrainingSet = dataSet.iloc[:,1:]

@@ -47,7 +47,7 @@ def getLabels():
         label = " "
     return labels
 
-def TestData(testSet, kernel, regularization=1, gamma="scale"):
+def TestData(testSet, kernel, regularization=1, gamma="auto"):
     s = svm.SVC(kernel=kernel, C=regularization, gamma=gamma)
     s.fit(TrainingSet, TrainingLabels)
     result = s.predict(TestSet)
@@ -126,9 +126,11 @@ for interval in range(1,51):
 #print(guesses)
 
 #print(averages)
+tracker = 1
+interval = 50
 for i in averages:
-  print("Linear:", i[0], "\tPoly:", i[1], "\tRBF:", i[2], "\tSigmoid:", i[3])
-
+  print("Interval", tracker/50 ," Linear:", i[0], "\tPoly:", i[1], "\tRBF:", i[2], "\tSigmoid:", i[3])
+  tracker += 1
 
 
 
